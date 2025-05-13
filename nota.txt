@@ -1,0 +1,8 @@
+- agregar para el efecto de disponible
+
+availability: "coming_soon",
+comingSoonText: "Disponible en 1 semana",
+
+si el Stock es 0 : automáticamente saldrá agotado
+
+- para actualizar solo dar firebase deploy

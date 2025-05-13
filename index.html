@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6e8efb, #a777e3);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        h3,
+        p {
+            text-align: justify;
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+            border: none;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-header {
+            background: var(--primary-gradient);
+            position: relative;
+        }
+
+        /* Estilo para el badge de descuento en los precios */
+        .text-end .discount-badge {
+            position: absolute;
+            top: -15px;
+            right: 0;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .text-end {
+            position: relative;
+            padding-top: 15px;
+            /* Espacio para el badge */
+        }
+
+        /* Ajustes para pantallas grandes */
+        @media (min-width: 768px) {
+            .text-end .discount-badge {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.6rem;
+                top: -18px;
+            }
+        }
+
+        /* Ajustes para móviles */
+        @media (max-width: 767.98px) {
+            .text-end .discount-badge {
+                top: -12px;
+                right: -5px;
+            }
+        }
+
+        .carousel-container {
+            height: 350px;
+            background-color: #f8f9fa;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image:hover {
+            transform: scale(1.03);
+        }
+
+        /* Modal styles */
+        .modal-glass-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            z-index: 1;
+        }
+
+        .modal-content-inner {
+            background: var(--glass-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 2;
+        }
+
+        .btn-navigation {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-navigation:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            opacity: 1;
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Price styles */
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .current-price {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-item {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Custom carousel indicators */
+        .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 3px;
+            border: none;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-indicators .active {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .luxury-glass-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .luxury-glass-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .modern-effect {
+            position: relative;
+            padding: 3rem 2rem;
+        }
+
+        .modern-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.03) 0%,
+                    rgba(255, 255, 255, 0) 100%);
+            pointer-events: none;
+        }
+
+        .elegant-title {
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 1px;
+            margin-bottom: 0;
+            display: inline-flex;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .luxury-icon {
+            font-size: 2.2rem;
+            margin-right: 1.2rem;
+            color: #d4af37;
+            transition: transform 0.3s ease;
+        }
+
+        .luxury-glass-container:hover .luxury-icon {
+            transform: rotate(-10deg);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+
+        .modern-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 3px;
+            font-size: 1rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .modern-subtitle::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+
+        /* Efectos de iluminación sutil */
+        .luxury-glass-container::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle,
+                    rgba(212, 175, 55, 0.1) 0%,
+                    rgba(0, 0, 0, 0) 70%);
+            pointer-events: none;
+            animation: rotate-light 15s linear infinite;
+        }
+
+        @keyframes rotate-light {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .neon-glass-container {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.8), rgba(40, 10, 50, 0.6));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            padding: 2rem;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.15), 0 0 60px rgba(255, 0, 255, 0.08);
+        }
+
+        .holographic-effect {
+            color: #fff;
+            will-change: transform;
+            /* Mejora el rendimiento */
+            isolation: isolate;
+            /* Limita el área de repintado */
+
+        }
+
+        .neon-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            text-shadow: 0 0 5px #0ff, 0 0 15px #0ff;
+            transform: translateZ(0);
+            /* Acelera el renderizado */
+            will-change: transform, text-shadow;
+
+        }
+
+        .mech-icon i {
+            font-size: 2.5rem;
+            margin-right: 10px;
+            color: #0ff;
+        }
+
+        /* Versión simplificada del glitch */
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+            animation: glitch-effect 3s infinite linear;
+            backface-visibility: hidden;
+
+        }
+
+        @media (max-width: 767.98px) {
+            .neon-glass-container {
+                padding: 1rem 1rem;
+            }
+
+            .neon-title {
+                font-size: 1.4rem;
+            }
+
+            .mech-icon i {
+                font-size: 1.4rem;
+                margin-right: 6px;
+            }
+
+            .cyber-subtitle {
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+                margin-top: 0.5rem;
+            }
+        }
+
+        @keyframes glitch-effect {
+
+            0%,
+            100% {
+                transform: translate(0);
+            }
+
+            25% {
+                transform: translate(-2px, 2px);
+            }
+
+            50% {
+                transform: translate(2px, -2px);
+            }
+
+            75% {
+                transform: translate(-2px, -2px);
+            }
+        }
+
+        .cyber-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #searchInput,
+        #sortSelect {
+            border-left: none;
+        }
+
+        .input-group-text {
+            border-right: none;
+        }
+
+        #sortSelect {
+            cursor: pointer;
+        }
+
+        /* Efecto para los filtros */
+        .input-group:focus-within {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Nuevos estilos para el modal de video */
+        #videoModal .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #videoModal .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            padding: 1.5rem;
+        }
+
+        #videoModal .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        #videoModal .modal-title::before,
+        #videoModal .modal-title::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #00ffff, transparent);
+        }
+
+        #videoModal .modal-title::before {
+            left: 0;
+        }
+
+        #videoModal .modal-title::after {
+            right: 0;
+            background: linear-gradient(90deg, transparent, #00ffff);
+        }
+
+        #videoModal .btn-close {
+            filter: invert(1);
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        #videoModal .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        #videoModal .modal-body {
+            padding: 0;
+            background: #000;
+        }
+
+        #videoFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            min-height: 400px;
+        }
+
+        #videoModal .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        #videoModal .modal-footer small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* Efecto de brillo sutil en los bordes */
+        #videoModal .modal-content::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 10px;
+            pointer-events: none;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #videoModal .modal-content:hover::after {
+            opacity: 1;
+        }
+
+        /* Animación para el título */
+        @keyframes pulseGlow {
+            0% {
+                text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            }
+
+            50% {
+                text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 25px rgba(0, 100, 255, 0.5);
+            }
+
+            100% {
+                text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            }
+        }
+
+        #videoModal .modal-title {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        /* Ajustes para móviles - Badge de descuento */
+        @media (max-width: 767.98px) {
+            .product-header {
+                padding-bottom: 2rem !important;
+                /* Más espacio para el badge */
+                position: relative;
+            }
+
+            .discount-badge {
+                font-size: 0.7rem !important;
+            }
+
+            .product-header h2 {
+                padding-right: 2rem;
+                /* Espacio para no solaparse con el badge */
+            }
+        }
+
+        /* Efecto agotado mejorado */
+        .product-out-of-stock {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-out-of-stock::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(45deg,
+                    rgba(0, 0, 0, 0.1),
+                    rgba(0, 0, 0, 0.1) 10px,
+                    rgba(0, 0, 0, 0.2) 10px,
+                    rgba(0, 0, 0, 0.2) 20px);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .product-out-of-stock::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+            pointer-events: none;
+        }
+
+        .out-of-stock-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            z-index: 11;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) rotate(-5deg) scale(1.05);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* Agrega esto en tu sección de estyles */
+        .product-coming-soon {
+            position: relative;
+        }
+
+        .product-coming-soon::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(45deg,
+                    rgba(0, 0, 0, 0.05),
+                    rgba(0, 0, 0, 0.05) 10px,
+                    rgba(0, 0, 0, 0.1) 10px,
+                    rgba(0, 0, 0, 0.1) 20px);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .product-coming-soon::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(33, 150, 243, 0.2);
+            z-index: 9;
+            pointer-events: none;
+        }
+
+        .coming-soon-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            z-index: 11;
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="neon-glass-container">
+        <div class="holographic-effect text-center animate__animated animate__fadeIn animate__delay-1s">
+            <h1 class="neon-title">
+                <span class="mech-icon"><i class="fas fa-car-crash"></i></span>
+                <span class="glitch-text" data-text="ACCESORIOS PARA TU FIEL COMPAÑERO">ACCESORIOS PARA TU FIEL
+                    COMPAÑERO</span>
+            </h1>
+            <div class="cyber-subtitle mt-3">EVOLUCIÓN AUTOMOTRIZ 4.0</div>
+        </div>
+    </div>
+    <div class="container py-5">
+        <!-- Agrega esto justo después del div con clase "container py-5" -->
+        <div class="container py-3">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar productos...">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white">
+                            <i class="fas fa-sort-amount-down"></i>
+                        </span>
+                        <select id="sortSelect" class="form-select">
+                            <option value="">Ordenar por...</option>
+                            <option value="price-asc">Precio: Menor a Mayor</option>
+                            <option value="price-desc">Precio: Mayor a Menor</option>
+                            <option value="name-asc">Nombre: A-Z</option>
+                            <option value="name-desc">Nombre: Z-A</option>
+                            <option value="stock-desc">Mayor stock primero</option>
+                            <option value="stock-asc">Menor stock primero</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="productsContainer" class="row"></div>
+        </div>
+        <!-- Products will be loaded here dynamically -->
+        <div id="productsContainer" class="row"></div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 bg-transparent">
+                <div class="modal-glass-backdrop"></div>
+                <div class="modal-content-inner position-relative">
+                    <div class="modal-header border-0 position-absolute top-0 end-0 z-3">
+                        <button type="button" class="bg-transparent border-0 fs-4 text-white" data-bs-dismiss="modal"
+                            aria-label="Close">
+                            &times;
+                        </button>
+
+                    </div>
+                    <div class="modal-body text-center position-relative p-4">
+                        <button class="btn btn-navigation prev-btn position-absolute start-0 top-50 translate-middle-y"
+                            onclick="navigateImage(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <img id="modalImage" src="" class="img-fluid rounded" alt="Imagen ampliada"
+                            style="max-height: 70vh;">
+                        <button class="btn btn-navigation next-btn position-absolute end-0 top-50 translate-middle-y"
+                            onclick="navigateImage(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="modal-footer border-0 flex-column pt-0">
+                        <div class="image-counter mb-2">
+                            <span id="imageCounter" class="badge bg-dark bg-opacity-50 text-white">1/1</span>
+                        </div>
+                        <div id="thumbnailsContainer"
+                            class="thumbnails-container d-flex justify-content-center gap-2 flex-wrap"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal de Video Mejorado -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body ratio ratio-16x9">
+                    <iframe id="videoFrame" src="" allowfullscreen></iframe>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap & Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Product data - can be loaded from JSON file or API
+        const products = [
+            {
+                id: 1,
+                title: "Arrancador portátil multifuncional",
+                subtitle: "Arrancador de batería, inflador de neumáticos, motocicleta, balones y linterna LED",
+                brand: "JKUOO",
+                description: "Compresor de Aire Sin Cable de 150PSI con Manómetro Digital y Luz LED, Carga USB para Inflado Rápido de Coches, Bicicletas, Motocicletas y Equipamiento Deportivo",
+                originalPrice: 199.99,
+                currentPrice: 180,
+                tags: ["CAR", "ELECTROCAR", "MOTORBIKE", "BICYCLE", "BALL"],
+                specs: [
+                    { icon: "bolt", text: "Fuente de alimentación: Carga por USB" },
+                    { icon: "battery-three-quarters", text: "Batería: Recargable de litio 2500mAh" },
+                    { icon: "tachometer-alt", text: "Presión máxima: 150 PSI" },
+                    { icon: "lightbulb", text: "Incluye: Luz LED integrada" },
+                    { icon: "tachometer-alt", text: "Manómetro: Digital para precisión" }
+                ],
+                stock: 3,
+                images: [
+                    "https://img.kwcdn.com/product/fancy/1755996a-de36-4c91-8fcf-00dc1f4b4fc0.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/558c597f-9d38-49ce-bcfd-58c271a1649b.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/7816f1c9-0359-48d1-bd34-fdecfe5903cf.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/3ccf50b7-ed44-47c8-9c26-43910f8992bd.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/46ce34df-3864-4dde-911e-55509cfc77d4.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5f18f131-a629-417b-9458-098a7cab8428.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/f40d4982-ef3f-48e6-8f52-15d080622ed8.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/89dbd355-8de6-46fb-b5ff-cd430190488b.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/9c148fee-3b73-4909-ac76-78f4106f41ff.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/f3515a49-a669-4d72-a7d1-164f6311529f.jpg?imageView2/2/w/800/q/70/format/webp",
+
+                ],
+                videoUrl: "https://drive.google.com/file/d/1oahKGVYTcYr_3e-KSjgmTZcL8MEDX1fr/preview"
+            },
+            {
+                id: 2,
+                title: "Panel de matriz LED RGB: 120 cm (largo) × 16.7 cm (ancho), con control y por app",
+                subtitle: "Matriz LED flexible con control por app, animaciones personalizables y resistencia IP66",
+                brand: "Matriz LED",
+                description: "Matriz LED RGB de 2121 píxeles con control remoto y aplicación móvil para personalizar animaciones, textos y patrones. Ideal para personalización vehicular y publicidad.",
+                originalPrice: 419.99,
+                currentPrice: 380,
+                tags: ["TRUCK", "CAR", "LED", "CUSTOM", "ADVERTISING"],
+                specs: [
+                    { icon: "bolt", text: "Voltaje: 12V/24V Universal" },
+                    { icon: "microchip", text: "2121 píxeles RGB de alta intensidad" },
+                    { icon: "mobile-alt", text: "Control por app (iPixel Color)" },
+                    { icon: "tint", text: "Resistencia IP66 (antigotas/lluvia)" },
+                    { icon: "arrows-alt", text: "Panel flexible y plegable" },
+                    { icon: "sun", text: "Brillo y velocidad ajustables" },
+                    { icon: "plug", text: "Incluye controlador USB y remoto" },
+                    { icon: "layer-group", text: "Material: ABS con resina epoxi" }
+                ],
+                stock: 4,
+                availability: "coming_soon", // <-- Nuevo campo
+                comingSoonText: "Disponible en 1 semana",// Texto personalizado
+                images: [
+                    "https://ae-pic-a1.aliexpress-media.com/kf/Se84840028bcb483e9ae0aedb34fe0eead.jpg_1024x1024q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S4cbb65dd90774c03a3136341a0ddcd6eZ.jpg_1500x1500q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/Sd2441dbcdb2f4985b23936ad2155a7a2g.jpg_1500x1500q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S448aa7aa9f144cbf8260f17bfabccf17l.jpg_1500x1500q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S9fb17630f2d745eb8ec4acd7c87ad0a5K.jpg_1500x1500q75.jpg_.avif",
+                    "https://ae01.alicdn.com/kf/S829858cd57f541e7b6b465cfd65a1062D.jpg",
+                    "https://ae01.alicdn.com/kf/Sddfa3e9ae68c4642b4c4d80069c87321w.jpg",
+                    "https://ae01.alicdn.com/kf/S46d01d612993485b85f72284f2e47209R.jpg",
+                    "https://ae01.alicdn.com/kf/S83927bff9a8a419e917de953af172785c.jpg",
+                    "https://ae01.alicdn.com/kf/Sf74b95e9ee324b22a6ac587511866b473.jpg",
+                    "https://ae01.alicdn.com/kf/Sc711eac35d28431980b4722cc60637bcr.jpg",
+                    "https://ae01.alicdn.com/kf/S46311ebb9c51497cb74a2617cb01a3ecE.jpg",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1greO5-jCLz1pnMw9khi4OL6fzAMwINT5/preview"
+            },
+            {
+                id: 3,
+                title: "Panel de matriz LED RGB: 120 cm (largo) × 16.7 cm (ancho), sin control, solo por app",
+                subtitle: "Matriz LED flexible sin control por app, animaciones personalizables y resistencia IP66",
+                brand: "Matriz LED",
+                description: "Matriz LED RGB de 2121 píxeles con control remoto y aplicación móvil para personalizar animaciones, textos y patrones. Ideal para personalización vehicular y publicidad.",
+                originalPrice: 409.99,
+                currentPrice: 370,
+                tags: ["TRUCK", "CAR", "LED", "CUSTOM", "ADVERTISING"],
+                specs: [
+                    { icon: "bolt", text: "Voltaje: 12V/24V Universal" },
+                    { icon: "microchip", text: "2121 píxeles RGB de alta intensidad" },
+                    { icon: "mobile-alt", text: "app (iPixel Color)" },
+                    { icon: "tint", text: "Resistencia IP66 (antigotas/lluvia)" },
+                    { icon: "arrows-alt", text: "Panel flexible y plegable" },
+                    { icon: "sun", text: "Brillo y velocidad ajustables" },
+                    { icon: "plug", text: "Encendedor de cigarrillos recargable" },
+                    { icon: "layer-group", text: "Material: ABS con resina epoxi" }
+                ],
+                stock: 2,
+                availability: "coming_soon", // <-- Nuevo campo
+                comingSoonText: "Disponible en 1 semana",// Texto personalizado
+                images: [
+                    "https://img.kwcdn.com/product/fancy/8adddd21-a7db-49a4-9729-c2a3404ef8c8.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/90569cc0-49f3-4d66-8029-51e54c110b89.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/bb1ce798-7eb5-47ef-8767-13192acdb588.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/0d88b85c-7ab9-43e6-89ef-63b14e4ba2aa.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/2ffe6df6-549d-4871-8c6b-cd0a46d3da5f.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5d2dd7c8-c8dc-4e84-8f97-b0f2402c0db4.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/bd4e2eb9-e3b5-47e5-bc24-23e311f223ab.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5217922e-596b-4876-9466-1a764995cda6.jpg?imageView2/2/w/800/q/70/format/webp",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1K3CMurE0in_0OqBqjhBUqScYDkKlqqFR/preview"
+            },
+            {
+                id: 4,
+                title: "Panel de matriz LED RGB: 150 cm (largo) × 16.7 cm (ancho), sin control, solo por app",
+                subtitle: "Matriz LED flexible con control por app, animaciones personalizables y resistencia IP66",
+                brand: "Matriz LED",
+                description: "Matriz LED RGB de 2121 píxeles con control remoto y aplicación móvil para personalizar animaciones, textos y patrones. Ideal para personalización vehicular y publicidad.",
+                originalPrice: 449.99,
+                currentPrice: 420,
+                tags: ["TRUCK", "CAR", "LED", "CUSTOM", "ADVERTISING"],
+                specs: [
+                    { icon: "bolt", text: "Voltaje: 12V/24V Universal" },
+                    { icon: "microchip", text: "2121 píxeles RGB de alta intensidad" },
+                    { icon: "mobile-alt", text: "Control por app (iPixel Color)" },
+                    { icon: "tint", text: "Resistencia IP66 (antigotas/lluvia)" },
+                    { icon: "arrows-alt", text: "Panel flexible y plegable" },
+                    { icon: "sun", text: "Brillo y velocidad ajustables" },
+                    { icon: "plug", text: "Encendedor de cigarrillos recargable" },
+                    { icon: "layer-group", text: "Material: ABS con resina epoxi" }
+                ],
+                stock: 2,
+                availability: "coming_soon", // <-- Nuevo campo
+                comingSoonText: "Disponible en 1 semana",// Texto personalizado
+                images: [
+                    "https://img.kwcdn.com/product/fancy/fdfc22f4-37d8-4db7-9d26-8b55738b6841.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/1f968e85-b88e-422b-9499-1ddd883f56af.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S448aa7aa9f144cbf8260f17bfabccf17l.jpg_1500x1500q75.jpg_.avif",
+                    "https://img.kwcdn.com/product/fancy/bb1ce798-7eb5-47ef-8767-13192acdb588.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/0d88b85c-7ab9-43e6-89ef-63b14e4ba2aa.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/2ffe6df6-549d-4871-8c6b-cd0a46d3da5f.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5d2dd7c8-c8dc-4e84-8f97-b0f2402c0db4.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/fdfc22f4-37d8-4db7-9d26-8b55738b6841.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://ae01.alicdn.com/kf/Sf74b95e9ee324b22a6ac587511866b473.jpg",
+                    "https://ae01.alicdn.com/kf/Sc711eac35d28431980b4722cc60637bcr.jpg",
+                    "https://ae01.alicdn.com/kf/S46311ebb9c51497cb74a2617cb01a3ecE.jpg",
+                    "https://img.kwcdn.com/product/fancy/8adddd21-a7db-49a4-9729-c2a3404ef8c8.jpg?imageView2/2/w/800/q/70/format/webp",
+
+                ],
+                videoUrl: "https://drive.google.com/file/d/1FwsT4QgQQ7d8aI2kbscGxXAv5Dx1Mzhw/preview"
+            },
+            {
+                id: 5,
+                title: "Panel de matriz LED RGB: 200 cm (largo) × 16.7 cm (ancho), sin control, solo por app",
+                subtitle: "Matriz LED flexible con control por app, animaciones personalizables y resistencia IP66",
+                brand: "Matriz LED",
+                description: "Matriz LED RGB de 2121 píxeles con control remoto y aplicación móvil para personalizar animaciones, textos y patrones. Ideal para personalización vehicular y publicidad.",
+                originalPrice: 499.99,
+                currentPrice: 460,
+                tags: ["TRUCK", "CAR", "LED", "CUSTOM", "ADVERTISING"],
+                specs: [
+                    { icon: "bolt", text: "Voltaje: 12V/24V Universal" },
+                    { icon: "microchip", text: "2121 píxeles RGB de alta intensidad" },
+                    { icon: "mobile-alt", text: "Control por app (iPixel Color)" },
+                    { icon: "tint", text: "Resistencia IP66 (antigotas/lluvia)" },
+                    { icon: "arrows-alt", text: "Panel flexible y plegable" },
+                    { icon: "sun", text: "Brillo y velocidad ajustables" },
+                    { icon: "plug", text: "Encendedor de cigarrillos recargable" },
+                    { icon: "layer-group", text: "Material: ABS con resina epoxi" }
+                ],
+                stock: 2,
+                availability: "coming_soon", // <-- Nuevo campo
+                comingSoonText: "Disponible en 1 semana",// Texto personalizado
+                images: [
+                    "https://ae01.alicdn.com/kf/S4b0a1db9e77740ca94170b3c1fd57a0e2.jpg",
+                    "https://img.kwcdn.com/product/fancy/fdfc22f4-37d8-4db7-9d26-8b55738b6841.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5ea33435-7389-4c1d-b40e-2004f737e244.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S448aa7aa9f144cbf8260f17bfabccf17l.jpg_1500x1500q75.jpg_.avif",
+                    "https://img.kwcdn.com/product/fancy/bb1ce798-7eb5-47ef-8767-13192acdb588.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/0d88b85c-7ab9-43e6-89ef-63b14e4ba2aa.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/2ffe6df6-549d-4871-8c6b-cd0a46d3da5f.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5d2dd7c8-c8dc-4e84-8f97-b0f2402c0db4.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://ae01.alicdn.com/kf/Sf74b95e9ee324b22a6ac587511866b473.jpg",
+                    "https://ae01.alicdn.com/kf/Sc711eac35d28431980b4722cc60637bcr.jpg",
+                    "https://ae01.alicdn.com/kf/S46311ebb9c51497cb74a2617cb01a3ecE.jpg",
+                    "https://img.kwcdn.com/product/fancy/8adddd21-a7db-49a4-9729-c2a3404ef8c8.jpg?imageView2/2/w/800/q/70/format/webp",
+
+                ],
+                videoUrl: "https://drive.google.com/file/d/1z_hUZhryjX5CSuf8QObM20hZSMbNp-U8/preview"
+            },
+            {
+                id: 6,
+                title: "Luz para Capó de Coche con Escaneo Dinámico, Luz Cortable y Control por App - 12V, IP68",
+                subtitle: "Tira LED de 180 cm flexible y delgada, con inicio secuencial, multicolor y protección impermeable",
+                brand: "LXLED",
+                description: "Esta tira de luz LED flexible para capó combina diseño avanzado y funcionalidad. Ofrece un efecto de escaneo dinámico al encenderse, encendido automático por sensor, y puede cortarse para adaptarse a diferentes longitudes.",
+                originalPrice: 79.99,
+                currentPrice: 60,
+                stock: 6,
+                tags: ["CAR", "LED", "CUSTOM", "LIGHTING", "DRL", "AUTOMOTIVE"],
+                specs: [
+                    { icon: "bolt", text: "12V" },
+                    { icon: "arrows-alt", text: "Longitud: 180 cm" },
+                    { icon: "tint", text: "IP68 impermeable" },
+                    { icon: "sun", text: "Encendido automático" },
+                    { icon: "plug", text: "Cableado directo" },
+                    { icon: "layer-group", text: "Silicona + PVC" },
+                    { icon: "palette", text: "Blanco, azul hielo, azul, rojo, amarillo" },
+                    { icon: "magic", text: "Efecto escaneo dinámico" },
+                    { icon: "tools", text: "Instalación con cinta 3M" },
+                    { icon: "star", text: "Funciones: 5 modos integrados" },
+                    { icon: "car", text: "Uso: capó, puertas, portón, etc." }
+                ],
+
+                images: [
+                    "https://i.ibb.co/hJrQcRbw/Screenshot-30.png",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719546728124-fcbd51d600f84bbe94243df0b926d4bd-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719544285534-9787638877b542c1905d9e0e78a5c6bc-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719546716689-1920f77efc4347a9a73c2c59b93ba162-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2de83b7483604a9ba457c89811b888e4-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/2f21484d-325d-4c02-a325-98e4eed54f0c.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719546309485-7a769529c3c4429cbd211e928bfdb706-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719546718381-69a8605b952f4891aed23e1288e14ab1-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719546362088-b1a96152409541ed9b34a7313659edda-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-06-28/1719546763160-92def86f5c4742fe829c68bb951b096b-goods.jpeg?imageView2/2/w/800/q/70/format/webp"
+                ],
+                videoUrl: "https://drive.google.com/file/d/1M2Ht-50IA8vH9i00U0LUgGyxXPT9CE2U/preview",
+                VideoInstalacionURL: "https://www.youtube.com/embed/3_RVdzYXAtI",
+
+            },
+            {
+                "id": 7,
+                "title": "Honalia RGB LED Luces de Roca con Control por App y Sincronización Musical",
+                "subtitle": "Kit de luces neón para chasis con IP68, 12 cápsulas RGBW y control remoto para vehículos off-road",
+                "brand": "Yilaie",
+                "description": "Kit premium de luces LED para chasis con control inteligente por app y mando RF. Ofrece sincronización con música, múltiples modos de color y es completamente impermeable para uso en condiciones extremas.",
+                "originalPrice": 399.99,
+                "currentPrice": 350,
+                "stock": 1,
+                "tags": ["OFFROAD", "RGB", "APP_CONTROL", "UNDERGLOW", "MUSIC_SYNC", "ATV", "SUV"],
+                "specs": [
+                    { "icon": "weight", "text": "Peso: 1.5 kg" },
+                    { "icon": "barcode", "text": "Modelo: EL-NCS-10" },
+                    { "icon": "cube", "text": "Material: ABS" },
+                    { "icon": "certificate", "text": "Certificación: CE" },
+                    { "icon": "lightbulb", "text": "Potencia: 3W/cápsula (12 unidades)" },
+                    { "icon": "microchip", "text": "LED: 15x 5050 SMD por cápsula" },
+                    { "icon": "bolt", "text": "Voltaje: 12V DC" },
+                    { "icon": "tint", "text": "IP68 (sumergible)" },
+                    { "icon": "mobile-alt", "text": "Control por App" },
+                    { "icon": "music", "text": "Sincronización musical" },
+                    { "icon": "palette", "text": "Colores: RGBW (RGB + Blanco)" },
+                    { "icon": "car-side", "text": "Compatibilidad: Off-road, ATV, SUV, barcos" }
+                ],
+                "images": [
+                    "https://ae-pic-a1.aliexpress-media.com/kf/Sde7a86c2e5ba47f48ab3b68cf96f985fe.jpg_960x960q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S083dc8957c7f43a09c8331903be60dadr.jpg_960x960q75.jpg_.avif",
+                    "https://ae01.alicdn.com/kf/Sd5abbff9438c4f8fbd2f174ff7706f1eK.jpg",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/Sabd3e72159184e6ea23e21ed472c71bcS.jpg_960x960q75.jpg_.avif",
+                    "https://ae01.alicdn.com/kf/S8a2dba85c95e4307971d9ce413ca9c35y.jpg",
+                    "https://ae01.alicdn.com/kf/Sd313e1cc307d4f8cbac40269b3a52ea3m.jpg",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S305b8ca37bca4813b88bf23bdfd8cc7al.jpg_960x960q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/Sf6e4a3ceb5e54606a84130dfa5fab449Y.jpg_960x960q75.jpg_.avif",
+                    "https://ae01.alicdn.com/kf/S74e2c46c9b26494e9e209c429feddbf2u.jpg",
+                    "https://ae01.alicdn.com/kf/S0c86a8347d5d493e90aad6fa0d2dfecfz.jpg",
+                    "https://ae01.alicdn.com/kf/S05c6f59ede2d470abdec00088e4064d0R.jpg",
+                    "https://ae01.alicdn.com/kf/S5f1282977d4a4b7bb839a53ba71a1ea8l.jpg",
+                    "https://ae01.alicdn.com/kf/S66dd1062612b44ec9c824fad7d527cb1I.png",
+                    "https://ae01.alicdn.com/kf/S3bddc059251546109111dfd3d90dbb97v.png",
+                ],
+                videoUrl: "https://drive.google.com/file/d/125S0YCxzKSDymNEAcf30NvtG6ZXKD8FD/preview",
+                VideoInstalacionURL: "https://www.youtube.com/embed/P_EAbnIfg-Y?si=oLesHQ5k32ZtVfkF",
+            },
+            {
+                id: 8,
+                title: "Tira LED Roja para Maletero con Funciones Completas",
+                subtitle: "Luz flexible de silicona con funciones de freno, direccionales, emergencia y arranque",
+                brand: "KEVANLY",
+                description: "Tira LED de neón para maletero con luz roja brillante y carcasa de PVC negro. Se conecta al sistema eléctrico del vehículo para ofrecer múltiples funciones: freno, luces de emergencia, luces direccionales y arranque. Instalable fácilmente con cinta adhesiva trasera.",
+                originalPrice: 99.99,
+                currentPrice: 80,
+                stock: 2,
+                tags: ["UNIVERSAL", "TRUNK_LIGHT", "RED_LED", "MULTIFUNCIÓN", "12V"],
+                specs: [
+                    { icon: "box", text: "Incluye: 1 tira LED de maletero" },
+                    { icon: "car-side", text: "Aplicación: Universal para vehículos" },
+                    { icon: "bolt", text: "Voltaje: 12V DC" },
+                    { icon: "battery-empty", text: "Sin batería, conexión directa al cableado" },
+                    { icon: "palette", text: "Color de luz: rojo" },
+                    { icon: "layer-group", text: "Material: Silicona + PVC" },
+                    { icon: "lightbulb", text: "Funciones: Freno, direccionales, emergencia y arranque" },
+                    { icon: "tools", text: "Instalación: Adhesiva + cableado eléctrico" },
+                    { icon: "star", text: "Funciones: 5 modos integrados" },
+                ],
+                "images": [
+                    "https://img.kwcdn.com/product/fancy/f9ca0450-7d07-41ba-af69-0e29f8d22613.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/d0ee7a4a-d7d5-45d8-82b3-426a5cd4d877.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/3de51003-a99a-4663-b3bf-577f34a15784.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/f4760c4f-645c-4a33-b490-74c64e8f3611.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/algo_check/auto/71e1cb370ebf7d26655ef6235d1b9200_1729682185966.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/4967d038-8d11-4f49-8bfd-8fa35c18e568.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/7cc4ed80-3ff3-423f-ae52-3859087f9281.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5cd92d6d-84c2-447a-83d4-2726415781fc.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/09fc8174-4c5f-45e6-8df2-2a143aae047b.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancyalgo/toaster-api/toaster-processor-image-cm2in/8678bbe6-0940-11f0-a1d5-0a580a632787.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/5b0e757b-c1a5-48b0-8870-276c60793e70.jpg?imageView2/2/w/800/q/70/format/webp",
+                ],
+                videoUrl: "https://drive.google.com/file/d/11tRGDJo0d9pJScfAg4huQ65tcsjxuXME/preview",
+                VideoInstalacionURL: "https://www.youtube.com/embed/aZsnoXyvtFQ?si=1tfCVN3SOVeZ6y_h",
+            },
+            {
+                id: 9,
+                title: "Tira de Luz de Freno LED de Montaje Alto - 101.6 cm",
+                subtitle: "Luz secuencial con 5 funciones: freno, señal de giro, advertencia y más",
+                brand: "AnautosL",
+                description: "Tira LED de alta calidad con 146 luces 5050 para tercera luz de freno. Incluye funciones secuenciales de señal de giro, luz de freno, luz de marcha y advertencia. Instalación sencilla con cinta adhesiva 3M sin necesidad de perforar. Compatible con la mayoría de vehículos de 12V.",
+                originalPrice: 79.99,
+                currentPrice: 50,
+                stock: 1,
+                tags: ["LED_BRAKE", "SEQUENTIAL", "UNIVERSAL", "12V", "EASY_INSTALL"],
+                specs: [
+                    { icon: "ruler", text: "Longitud: 101.6 cm (40 pulgadas)" },
+                    { icon: "bolt", text: "Voltaje: 12V DC" },
+                    { icon: "lightbulb", text: "LEDs: 146 unidades 5050 SMD" },
+                    { icon: "layer-group", text: "Material: Silicona flexible + PVC" },
+                    { icon: "car-side", text: "Compatibilidad: Universal para vehículos" },
+                    { icon: "plug", text: "Instalación: Adhesiva (no requiere perforación)" },
+                    { icon: "microchip", text: "Conexión: 3 cables (rojo+/negro-/amarillo giro)" },
+                    { icon: "star", text: "Funciones: 5 modos integrados" },
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/fancy/96276b40-4dc2-4d22-9e67-e65bc0ce71d6.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/bd54704d-97f5-43de-89fd-c748b813dc4a.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/a697a4a7-6147-46b4-917c-5d3af4ae7f75.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/a25d90cd-80b8-4e14-a6cd-25cb1d77cefc.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/27c6139c-a19c-40f3-b676-ce37a034cc1e.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/a25d90cd-80b8-4e14-a6cd-25cb1d77cefc.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/6f5ecbc6-f35c-432f-8791-db53f1bc5aba.jpg?imageView2/2/w/800/q/70/format/webp",
+                ],
+                videoUrl: "https://drive.google.com/file/d/148fs0mH9aA4imC6uK6RhgEA04L9A-26y/preview",
+                VideoInstalacionURL: "https://www.youtube.com/embed/JlHL2usv7gg?si=lesI9C0KCUJTd4bi"
+            },
+            {
+                id: 10,
+                title: "Kit x2 Luces DRL LED Flexibles 45CM - Blanco/Amarillo",
+                subtitle: "Luz diurna, giro y freno con efecto secuencial - Impermeable IP67",
+                brand: "AutoBeam",
+                description: "Kit de 2 tiras LED flexibles para luz diurna (DRL), señal de giro y freno. Efecto de flujo blanco-amarillo con tecnología de escaneo. Instalación sencilla con adhesivo 3M. Resistente al agua IP67. Funciona como luz de circulación diurna blanca y se convierte en amarillo intermitente para señal de giro. Incluye controlador integrado para mayor durabilidad.",
+                originalPrice: 49.99,
+                currentPrice: 40,
+                stock: 6,
+                tags: ["DRL_LED", "FLEXIBLE", "TURN_SIGNAL", "IP67", "12V", "DAYTIME_RUNNING"],
+                specs: [
+                    { icon: "ruler-combined", text: "Longitud: 45 cm (x2 unidades)" },
+                    { icon: "palette", text: "Colores: Blanco (DRL) → Amarillo (giro)" },
+                    { icon: "bolt", text: "Voltaje: 12V DC" },
+                    { icon: "tint", text: "Protección: IP67 Impermeable" },
+                    { icon: "temperature-low", text: "Rango térmico: -40°C a 50°C" },
+                    { icon: "car-side", text: "Compatibilidad: Universal" },
+                    { icon: "layer-group", text: "Material: Silicona flexible" },
+                    { icon: "microchip", text: "Controlador integrado" },
+                    { icon: "plug", text: "Conexión: 3 cables (rojo+/negro-/amarillo giro)" },
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281043539-c3a8e6084f2a491b98a6b59afcd676d5-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281060172-3c99c94b503f453db5ca578980f654af-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/475a1606-60d9-4593-8b84-ecbd90371dbb.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281045948-866b9f0f57ba4c70b407ff4d5acf9a1c-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281041848-492b20319c6e45519fe8c8c6fc37cf40-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281049206-61a881b8683945df92479cce625a6732-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281053296-92701f4ad5c445ab8426dd07e1494ee8-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281058758-403c567fae5b4c2db33d083992d0ca12-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/2024-10-07/1728281059496-1ccc2bdf22c24a7db1277ffdf8f6ae7a-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1c45weIDqp1L8M8ymBT6BtcsO9tILx9mO/preview",
+                VideoInstalacionURL: "https://www.youtube.com/embed/gA7groABiJ4?si=M6WSSWUj7W7Dh_pO"
+            },
+            {
+                id: 11,
+                title: "Luz de Emoticono para Coche con Control Remoto",
+                subtitle: "Divertidas expresiones LED - 12 diseños diferentes - Fácil instalación magnética",
+                brand: "AutoExpressions",
+                description: "Luz LED con 12 emoticonos diferentes para personalizar tu coche. Control remoto inalámbrico para cambiar expresiones. Instalación magnética sin herramientas. Ideal para saludos, agradecimientos o bromas en la carretera. Funciona con baterías de botón (incluidas). Resistente a vibraciones y cambios de temperatura.",
+                originalPrice: 69.99,
+                currentPrice: 60,
+                stock: 1,
+                tags: ["FUN_LED", "REMOTE_CONTROL", "CAR_ACCESSORY", "EXPRESSION_LIGHT", "NOVELTY"],
+                specs: [
+                    { icon: "smile", text: "12 expresiones diferentes" },
+                    { icon: "magic", text: "Cambio automático de expresiones" },
+                    { icon: "battery-three-quarters", text: "Alimentación: 3x CR2032 (incluidas)" },
+                    { icon: "magnet", text: "Instalación magnética" },
+                    { icon: "car-side", text: "Compatibilidad: Universal" },
+                    { icon: "sun", text: "LEDs brillantes (dia/noche)" },
+                    { icon: "plug", text: "Sin cableado - 100% inalámbrico" },
+                    { icon: "temperature-low", text: "Resistente a -20°C a 60°C" },
+                    { icon: "signal", text: "Alcance remoto: 5 metros" },
+                    { icon: "weight", text: "Peso: 120g" },
+                    { icon: "ruler", text: "Dimensiones: 10x10cm" }
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/fancy/78994abe-e899-4553-b482-1088cfc91c17.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/4b1d1e9c-842a-4a00-99a7-004031f711c7.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S37d8893faec14d969843a52590e947a5z.jpg_950x950q75.jpg_.avif",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S5be82402046b4ce79ec0b15698cdf347B.jpg_950x950q75.jpg_.avif",
+                    "https://img.kwcdn.com/product/fancy/2c8d2d4f-b546-4a30-bb8a-1689c6fb75ad.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/44cb539a-be51-4db8-ae0f-b2a3311fe4b2.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://ae01.alicdn.com/kf/S853d2cfc8fd24ea89aa2739785cd4dfeU.jpg?width=800&height=1627&hash=2427",
+                    "https://ae01.alicdn.com/kf/S853d2cfc8fd24ea89aa2739785cd4dfeU.jpg?width=800&height=1627&hash=2427",
+                    "https://ae01.alicdn.com/kf/Sc855672b536644288bf4dae6e8b50832J.jpg?width=800&height=1627&hash=2427",
+                    "https://ae01.alicdn.com/kf/S496fc27dab1541219b622e5d48ed8ca48.jpg?width=800&height=1627&hash=2427",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1cQhGs3yZHLsVDxf_RVv9xYjJZ0akiezA/preview",
+            },
+            {
+                id: 12,
+                title: "Monitor de Presión de Neumáticos YNF Solar + USB - 6 Sensores",
+                subtitle: "Sistema profesional para camiones, autocaravanas y vehículos pesados - Pantalla LCD a color",
+                brand: "YNF",
+                description: "Sistema avanzado de monitorización de presión y temperatura de neumáticos con 6 sensores externos. Doble alimentación (solar + USB) para funcionamiento continuo. Pantalla LCD a color con alertas visuales y sonoras. Compatible con vehículos de hasta 36V. Sensores impermeables IP67 con batería recambiable de larga duración (hasta 2 años). Incluye soporte ajustable para salpicadero.",
+                originalPrice: 129.99,
+                currentPrice: 100,
+                stock: 1,
+                tags: ["TPMS", "SOLAR_POWERED", "COMMERCIAL_VEHICLES", "6_SENSORS", "REALTIME_MONITORING"],
+                specs: [
+                    { icon: "solar-panel", text: "Alimentación: Solar + USB-C" },
+                    { icon: "microchip", text: "Sensores: 6 externos (IP67)" },
+                    { icon: "tachometer-alt", text: "Rango presión: 0-87 PSI (±1 PSI)" },
+                    { icon: "temperature-high", text: "Monitorización temperatura" },
+                    { icon: "truck", text: "Compatibilidad: Camiones, RV, tractores" },
+                    { icon: "battery-three-quarters", text: "Autonomía: 30 días sin carga" },
+                    { icon: "mobile-alt", text: "Pantalla: LCD a color 3.5\"" },
+                    { icon: "bell", text: "Alertas: Visuales + sonoras" },
+                    { icon: "plug", text: "Conexión: USB-C para carga rápida" },
+                    { icon: "bolt", text: "Voltaje soportado: ≤36V" },
+                    { icon: "clock", text: "Batería sensores: 2 años duración" },
+                    { icon: "weight", text: "Peso unidad: 180g" },
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/fancy/958440ad-4bd0-4f8b-a522-88e561f4fd82.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/01cb6af4-461d-4dc6-a1a1-6d677dc271cd.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/1b2cad91-ba85-48e3-9fb4-ac700ba88549.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/28c6a6ae-9614-4cf2-a17e-d08300a95d2c.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/fdaa259c-dd00-4a07-bad4-5d19e99835b0.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/cf870d73-9105-4e8f-92b6-fe8fcca12e65.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/69ccce39-f447-456f-ae48-4c6c4422cf01.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/2301a5fb-c7f3-42b4-a434-5b9f6b2802c7.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/f5f8e378-9e86-4b3e-9601-1fd53d386a82.jpg?imageView2/2/w/800/q/70/format/webp",
+                ],
+            },
+            {
+                id: 13,
+                title: "Ala Trasera LED GM 130cm RGB Flexible",
+                subtitle: "Tira LED multicolor para camiones - Efectos RGB personalizables - 12V directo",
+                brand: "GM",
+                description: "Ala trasera LED de 130 cm con tecnología RGB flexible para personalización de colores. Conexión directa al sistema eléctrico 12V del vehículo. Diseño resistente para uso en camiones, con difusor de luz uniforme. Incluye controlador RGB con mando a distancia para cambiar entre 16 millones de colores y efectos dinámicos.",
+                originalPrice: 129.99,
+                currentPrice: 90,
+                stock: 1,
+                availability: "coming_soon", // <-- Nuevo campo
+                comingSoonText: "Disponible en 1 semana",// Texto personalizado
+                tags: ["TRUCK_LED", "RGB_LIGHTING", "GM_STYLE", "12V", "DECORATIVE_LIGHT"],
+                specs: [
+                    { icon: "ruler", text: "Longitud: 130 cm" },
+                    { icon: "palette", text: "Colores: RGB (16 millones)" },
+                    { icon: "bolt", text: "Voltaje: 12V DC" },
+                    { icon: "plug", text: "Conexión: Cableado directo" },
+                    { icon: "car-truck", text: "Diseño para camiones GM" },
+                    { icon: "magic", text: "Efectos luminosos programables" },
+                    { icon: "sun", text: "LEDs: 5050 SMD alta luminosidad" },
+                    { icon: "layer-group", text: "Material: PVC flexible" },
+                    { icon: "barcode", text: "Modelo: WP1625467" },
+                    { icon: "globe", text: "Origen: Guangdong, China" }
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/open/fdf774beb122441782ce5a4d3a739535-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/c37eee7b9f25431689a1375804bacf48-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/4f5de3a065164c65945f03fff512892f-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/03b354c92266452b8ef2c8d15b46b199-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/f844f041cf2a4e94b964cb0c2e7e6b5d-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/bfa5e732ea854d6aa59237fd1e363a39-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/open/98a261a963884502bea561f76a0aad64-goods.jpeg?imageView2/2/w/800/q/70/format/webp",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1aq00EeZMzLBImWV4_UE1VErVG7hcWRsY/preview",
+                VideoInstalacionURL: "https://www.youtube.com/embed/aZsnoXyvtFQ?si=1tfCVN3SOVeZ6y_h",
+
+            },
+            {
+                id: 14,
+                title: "Cámara para Coche ZKCAMSPY Dual 1080P",
+                subtitle: "Doble lente 170° - Visión nocturna - Grabación en bucle - Detección de impacto",
+                brand: "ZKCAMSPY",
+                description: "Cámara dual para coche con grabación Full HD 1080P en ambas direcciones. Lente gran angular de 170° con visión nocturna avanzada. Sistema de grabación en bucle con detección de movimiento y sensor G para grabación automática en impactos. Alimentación mediante encendedor de cigarrillos o batería interna de respaldo (150mAh). Pantalla LED para configuración y visualización.",
+                originalPrice: 119.99,
+                currentPrice: 100,
+                stock: 2,
+                availability: "coming_soon", // <-- Nuevo campo
+                comingSoonText: "Disponible en 1 semana",// Texto personalizado
+                tags: [
+                    "DASH_CAM",
+                    "DUAL_LENS",
+                    "NIGHT_VISION",
+                    "LOOP_RECORDING",
+                    "G_SENSOR",
+                    "CAR_SECURITY"
+                ],
+                specs: [
+                    { "icon": "camera", "text": "Resolución: 1080P Full HD (Dual)" },
+                    { "icon": "expand", "text": "Ángulo: 170° gran angular" },
+                    { "icon": "moon", "text": "Visión nocturna con IR" },
+                    { "icon": "sync", "text": "Grabación en bucle automático" },
+                    { "icon": "car-crash", "text": "Sensor G (detección de impactos)" },
+                    { "icon": "battery-three-quarters", "text": "Batería: 150mAh Li-Po" },
+                    { "icon": "plug", "text": "Alimentación: 12V/24V (encendedor)" },
+                    { "icon": "microchip", "text": "Memoria: MicroSD (no incluida)" },
+                    { "icon": "video", "text": "Formato: MP4 (H.264)" },
+                    { "icon": "shield-alt", "text": "Protección: Supercapacitor" },
+                    { "icon": "barcode", "text": "Modelo: MM282557" }
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/fancy/247f2946-319a-45c5-9aca-a817144b46c9.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/613068fb-12f7-4212-acca-9f9f3863b92f_1000x1000.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/77800c40-fb28-4d38-8d11-f21ef7db06b9_800x800.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/7cf73e1e-cd1d-444c-af26-eabfc6661e31_1000x1000.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/04ddaa9a-60ca-4258-8dce-755779cd8a8c_1000x1000.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/122e0842-25e1-4d24-84d5-e25ab16d7267_800x800.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/042af8df-fb61-46e2-bfc5-72fbec04a2e1_1000x1000.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/cdb909d3-cb66-4ffa-9c49-ce79c6862025_1920x1920.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/73d5b0c2-4fa0-4bd6-bfd0-5aaf439ed24a_1000x1000.jpeg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/1fee581500/e51291d4-e6ef-4bba-8671-797dc420453b_800x800.jpeg?imageView2/2/w/800/q/70/format/webp",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1rS1f8l_-70QVMRIbK48X-f0OTT8lmgca/preview",
+            },
+            {
+                id: 15,
+                title: "Figurina de Gato Musculoso Clásico - Resina Decorativa tamaño Pequeño",
+                brand: "ArtResin",
+                description: "Adorno único para hogar y oficina - Estilo fantástico. Diseño clásico y humorístico perfecto para añadir personalidad a cualquier espacio. Acabado artesanal con detalles realistas. Ideal como pieza de conversación en estanterías, escritorios o vestíbulos. No requiere electricidad ni mantenimiento.",
+                originalPrice: 49.99,
+                currentPrice: 40,
+                stock: 2,
+                tags: [
+                    "CAT_STATUE",
+                    "RESIN_ART",
+                    "HOME_DECOR",
+                    "FANTASY_THEME",
+                    "GIFT_IDEA"
+                ],
+                specs: [
+                    { "icon": "cube", "text": "Material: Resina premium" },
+                    { "icon": "ruler", "text": "Altura: ~9.5 cm" },
+                    { "icon": "weight", "text": "Peso: ~500 g" },
+                    { "icon": "palette", "text": "Acabado: Pintura artesanal" },
+                    { "icon": "home", "text": "Uso: Interior (hogar/oficina)" },
+                    { "icon": "sun", "text": "Resistente a decoloración" },
+                    { "icon": "globe-asia", "text": "Origen: Fujian, China" }
+                ],
+                images: [
+                    "https://img.kwcdn.com/product/fancy/13783079-65df-4797-a8aa-c94257371b59.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/bbbdd760-7327-41bd-9189-ec14897780ed.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancy/85a62670-d5ea-49f4-bb1b-dc4819664814.jpg?imageView2/2/w/800/q/70/format/webp",
+                    "https://img.kwcdn.com/product/fancyalgo/toaster-api/toaster-processor-image-cm2in/7582c086-eb21-11ee-86e5-0a580a68309d.jpg?imageView2/2/w/800/q/70/format/webp",
+                ],
+            },
+            {
+                id: 16,
+                title: "Luz de Umbral de Puerta LED con Proyector de Logotipo - USB, 2 Piezas pequeñas de 26.5 cm",
+                brand: "KEVANLY",
+                description: "Lámpara LED decorativa para puertas de coche con proyección de logotipo. Alimentación USB para fácil instalación sin cables. Iluminación elegante con sensor magnético y modos de luz dinámicos. Ideal para darle un toque moderno a tu vehículo.",
+                originalPrice: 70.00,
+                currentPrice: 60.00,
+                stock: 1,
+                tags: [
+                    "CAR_LED_LIGHT",
+                    "WELCOME_LIGHT",
+                    "USB_POWERED",
+                    "DOOR_SILL",
+                    "AUTO_ACCESSORY"
+                ],
+                specs: [
+                    { "icon": "bolt", "text": "Alimentación: USB (recargable)" },
+                    { "icon": "wand", "text": "Efecto: Proyector de logotipo Toyota" },
+                    { "icon": "battery", "text": "Duración: Hasta 2 meses por carga USB" },
+                    { "icon": "battery", "text": "Quitar protector" },
+                    { "icon": "lightbulb", "text": "Modos: Flujo de luz dinámico multicolor" },
+                    { "icon": "ruler", "text": "Tamaños: 26.5 cm" },
+                    { "icon": "package", "text": "Contenido: 2 piezas pequeñas (modelo de batería)" },
+                    { "icon": "globe-asia", "text": "Presionar 3sg para encender" },
+                ],
+                images: [
+                    "https://i.ibb.co/0VR4ch8b/820a924c-ede4-4272-b378-d69fa2671892.jpg",
+                    "https://i.ibb.co/vvgRJqcP/0d4ef7e3-ffe3-4679-8b88-5f7b0c21b7d6.jpg",
+                    "https://i.ibb.co/fYmvtT0W/S67c88d781d52488dbcf6e854827f7ec4i.jpg",
+                    "https://ae-pic-a1.aliexpress-media.com/kf/S92288bafe8ca46ce9c43ada1f12e44150.jpg_950x950q75.jpg_.avif",
+                    "https://ae01.alicdn.com/kf/S551eec15e9c54a1bbfc142cbf035f7cdH.jpg",
+                    "https://i.ibb.co/spkVyNny/Sb37c667d5d4146b98892f8507c4f8c50w.jpg",
+                    "https://i.ibb.co/bgJjY06L/S992986f2bd2f47448d42c2c209d4d907l.jpg",
+                    "https://i.ibb.co/cSsN049C/S102e6e53da494fa5a523e54c2d4e9758s.jpg",
+                    "https://i.ibb.co/xqGD5q0s/Sb31a29a40fb04f3282bd878e5ab4bde1-B.jpg",
+                ],
+                videoUrl: "https://drive.google.com/file/d/1GagBN6SoSpcPJdGf9P1ulbdMW7VLDF1w/preview",
+
+            }
+
+        ];
+
+        // Current modal state
+        let currentProduct = null;
+        let currentImageIndex = 0;
+        let carouselInstances = [];
+        // Variables globales
+        let filteredProducts = [...products];
+        // Función para filtrar y ordenar productos
+        function filterAndSortProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortOption = document.getElementById('sortSelect').value;
+
+            // Filtrar
+            filteredProducts = products.filter(product =>
+                product.title.toLowerCase().includes(searchTerm) ||
+                product.brand.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm) ||
+                product.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+
+            // Ordenar
+            switch (sortOption) {
+                case 'price-asc':
+                    filteredProducts.sort((a, b) => a.currentPrice - b.currentPrice);
+                    break;
+                case 'price-desc':
+                    filteredProducts.sort((a, b) => b.currentPrice - a.currentPrice);
+                    break;
+                case 'name-asc':
+                    filteredProducts.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'name-desc':
+                    filteredProducts.sort((a, b) => b.title.localeCompare(a.title));
+                    break;
+
+                // Dentro del switch
+                case 'stock-asc':
+                    filteredProducts.sort((a, b) => a.stock - b.stock);
+                    break;
+                case 'stock-desc':
+                    filteredProducts.sort((a, b) => b.stock - a.stock);
+                    break;
+                default:
+                    // Sin ordenamiento especial
+                    break;
+            }
+
+            renderFilteredProducts();
+        }
+
+        // Función para renderizar productos filtrados
+        function renderFilteredProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            carouselInstances = [];
+
+            filteredProducts.forEach((product, index) => {
+                const delay = index * 100;
+                container.innerHTML += createProductCard(product, delay);
+
+                const carouselId = `productCarousel${product.id}`;
+                const carouselElement = document.getElementById(carouselId);
+
+                if (carouselElement && product.images.length > 1) {
+                    const carousel = new bootstrap.Carousel(carouselElement, {
+                        interval: 3000,
+                        wrap: true
+                    });
+                    carouselInstances.push(carousel);
+                }
+            });
+        }
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            renderProducts();
+
+            // Inicializar modal
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+
+            // Event listeners para filtros
+            document.getElementById('searchInput').addEventListener('input', filterAndSortProducts);
+            document.getElementById('sortSelect').addEventListener('change', filterAndSortProducts);
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function (e) {
+                if (modal._isShown) {
+                    if (e.key === 'ArrowRight') navigateImage(1);
+                    if (e.key === 'ArrowLeft') navigateImage(-1);
+                    if (e.key === 'Escape') modal.hide();
+                }
+            });
+        });
+        // Función para calcular el descuento automáticamente:
+        function calculateDiscount(originalPrice, currentPrice) {
+            if (typeof originalPrice !== 'number' || typeof currentPrice !== 'number') return 0;
+            if (originalPrice <= 0 || currentPrice <= 0) return 0;
+            if (currentPrice >= originalPrice) return 0;
+
+            const discount = ((originalPrice - currentPrice) / originalPrice) * 100;
+            return Math.round(discount);
+        }
+        // Render all products
+        function renderProducts(productsToRender = products) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            carouselInstances = [];
+
+            productsToRender.forEach((product, index) => {
+                const delay = index * 100;
+                container.innerHTML += createProductCard(product, delay);
+
+                const carouselId = `productCarousel${product.id}`;
+                const carouselElement = document.getElementById(carouselId);
+
+                if (carouselElement && product.images.length > 1) {
+                    const carousel = new bootstrap.Carousel(carouselElement, {
+                        interval: 3000,
+                        wrap: true
+                    });
+                    carouselInstances.push(carousel);
+                }
+            });
+        }
+        firebase.analytics().logEvent('view_product', {
+            product_id: product.id,
+            product_name: product.title
+        });
+        // Create HTML for a product card
+        function createProductCard(product, animationDelay = 0) {
+            // Calcula el descuento
+            const discount = calculateDiscount(product.originalPrice, product.currentPrice);
+
+            // Determina el estado del producto
+            const availability = product.availability || (product.stock > 0 ? "in_stock" : "out_of_stock");
+
+            // Clases CSS según disponibilidad
+            const availabilityClass = availability === "out_of_stock" ? "product-out-of-stock" :
+                availability === "coming_soon" ? "product-coming-soon" : "";
+
+            // Texto y clase para el stock
+            let stockText, stockClass;
+            if (availability === "coming_soon") {
+                stockText = product.comingSoonText || "Próximamente";
+                stockClass = "text-info";
+            } else {
+                stockText = product.stock > 5 ? 'Disponible' :
+                    product.stock === 1 ? 'Última' :
+                        product.stock > 0 ? 'Últimas' : 'Agotado';
+                stockClass = product.stock > 5 ? 'text-success' :
+                    product.stock > 0 ? 'text-warning' : 'text-danger';
+            }
+
+            return `
+        <div class="col-lg-6 mb-4 product-item ${availabilityClass}" style="animation-delay: ${animationDelay}ms">
+            <div class="card product-card h-100 shadow position-relative">
+                ${availability === "out_of_stock" ? `
+                    <div class="out-of-stock-label">
+                        <i class="fas fa-times-circle me-2"></i>Agotado
+                    </div>
+                ` : ''}
+
+                ${availability === "coming_soon" ? `
+                    <div class="coming-soon-label">
+                        <i class="fas fa-clock me-2"></i>${stockText}
+                    </div>
+                ` : ''}
+
+                <div class="product-header text-center position-relative overflow-hidden py-4" 
+                     style="background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);">
+                    <!-- Efecto de partículas sutiles -->
+                    <div class="position-absolute top-0 start-0 w-100 h-100" 
+                         style="background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%);"></div>
+
+                    <!-- Badge moderno con efecto neón -->
+                    <span class="badge position-absolute top-0 start-0 translate-middle m-2" 
+                          style="
+                              background: rgba(46, 204, 113, 0.2);
+                              border: 1px solid rgba(46, 204, 113, 0.8);
+                              box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+                              width: 32px;
+                              height: 32px;
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                              border-radius: 50%;
+                              font-weight: 600;
+                              backdrop-filter: blur(2px);">
+                        ${product.id}
+                    </span>
+
+                    <!-- Contenido del encabezado con animación sutil -->
+                    <div class="position-relative z-1" style="transform-style: preserve-3d;">
+                        <h2 class="h5 fw-bold mb-1 text-gradient" 
+                            style="
+                                background: linear-gradient(to right, #fff 0%, #a1c4fd 100%);
+                                -webkit-background-clip: text;
+                                -webkit-text-fill-color: transparent;
+                                letter-spacing: 0.5px;
+                                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                font-family: 'Segoe UI', system-ui, sans-serif;">
+                            ${product.title}
+                        </h2>
+
+                        <p class="small mb-0 opacity-85" 
+                           style="
+                               color: #e0e0e0;
+                               max-width: 80%;
+                               margin: 0 auto;
+                               font-weight: 300;
+                               letter-spacing: 0.3px;
+                               text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            ${product.description}
+                        </p>
+                    </div>
+
+                    <!-- Efecto de borde inferior -->
+                    <div class="position-absolute bottom-0 start-0 w-100" style="height: 2px; background: linear-gradient(90deg, transparent 0%, rgba(161, 196, 253, 0.6) 50%, transparent 100%);"></div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="carousel-container rounded-3 overflow-hidden position-relative h-100">
+                                <div id="productCarousel${product.id}" class="carousel slide h-100" data-bs-ride="carousel">
+                                    <div class="carousel-inner h-100">
+                                        ${product.images.map((img, idx) => `
+                                            <div class="carousel-item h-100 ${idx === 0 ? 'active' : ''}">
+                                                <img src="${img}" class="d-block product-image" loading="lazy" alt="${product.title} - Vista ${idx + 1}"
+                                                    onclick="openImageModal(${product.id}, ${idx})">
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    ${product.images.length > 1 ? `
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel${product.id}" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon bg-dark rounded-circle p-2"></span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel${product.id}" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon bg-dark rounded-circle p-2"></span>
+                                        </button>
+                                        <div class="carousel-indicators position-absolute bottom-0">
+                                            ${product.images.map((_, idx) => `
+                                                <button type="button" data-bs-target="#productCarousel${product.id}" 
+                                                    data-bs-slide-to="${idx}" class="${idx === 0 ? 'active' : ''}"></button>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="small">
+                                    <span class="text-muted">Marca:</span>
+                                    <span class="fw-bold">${product.brand}</span>
+                                </div>
+                                <div class="text-end">
+                                    ${discount > 0 ? `<span class="badge bg-danger discount-badge">${discount}% OFF</span>` : ''}
+                                    ${product.originalPrice ? `<span class="original-price">S/. ${product.originalPrice.toFixed(2)}</span>` : ''}
+                                    <span class="d-block current-price">S/. ${product.currentPrice.toFixed(2)}</span>
+                                    <small class="${stockClass}">${stockText}${availability !== "coming_soon" ? ` (${product.stock} ${product.stock === 1 ? 'unidad' : 'unidades'})` : ''}</small>
+                                </div>
+                            </div>
+
+                            ${product.tags.length ? `
+                              <div class="mb-3 d-flex flex-wrap justify-content-center gap-1">
+                                ${product.tags.map(tag => `<span class="badge bg-primary">${tag}</span>`).join('')}
+                              </div>
+                            ` : ''}
+
+                            ${product.specs.length ? `
+                              <!-- Visible como dropdown solo en móviles -->
+                              <div class="d-md-none mb-3 text-center">
+                                <button class="btn btn-outline-primary btn-sm text-center" type="button" data-bs-toggle="collapse" data-bs-target="#specsCollapse${product.id}">
+                                  <i class="fas fa-info-circle me-2"></i>Ver Especificaciones
+                                </button>
+                                <div class="collapse mt-2" id="specsCollapse${product.id}">
+                                  <ul class="list-unstyled small text-start">
+                                    ${product.specs.map(spec => `
+                                      <li class="mb-1"><i class="fas fa-${spec.icon} text-primary me-2"></i>${spec.text}</li>
+                                    `).join('')}
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <!-- Siempre visible en pantallas medianas o mayores -->
+                              <div class="d-none d-md-block mb-3">
+                                <h4 class="h6 fw-bold mb-2"><i class="fas fa-info-circle text-primary me-2"></i>Especificaciones:</h4>
+                                <ul class="list-unstyled small">
+                                  ${product.specs.map(spec => `
+                                    <li class="mb-1"><i class="fas fa-${spec.icon} text-primary me-2"></i>${spec.text}</li>
+                                  `).join('')}
+                                </ul>
+                              </div>
+                            ` : ''}
+
+                            ${product.stock <= 0 ? `
+                                <div class="alert alert-danger py-1 mb-3 text-center">
+                                    <i class="fas fa-exclamation-circle me-2"></i>Producto agotado
+                                </div>
+                            ` : product.stock === 1 ? `
+                                <div class="alert alert-warning py-1 mb-3 text-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>¡Última unidad disponible!
+                                </div>
+                            ` : product.stock <= 5 ? `
+                                <div class="alert alert-warning py-1 mb-3 text-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>¡Últimas unidades disponibles!
+                                </div>
+                            ` : ''}
+
+                            <div class="d-flex flex-wrap justify-content-center gap-2 mt-auto pt-2">
+                                ${product.videoUrl ? `
+                                <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center" 
+                                        onclick="openVideoModal('${product.videoUrl}', '${product.title}')"
+                                        ${availability !== "in_stock" ? 'disabled' : ''}>
+                                    <i class="fas fa-video me-1"></i>
+                                    <span>Video</span>
+                                </button>
+                                ` : ''}
+
+                                ${product.VideoInstalacionURL ? `
+                                <button class="btn btn-outline-primary btn-sm d-inline-flex align-items-center" 
+                                        onclick="openVideoModal('${product.VideoInstalacionURL}', 'Instalación de ${product.title}')"
+                                        ${availability !== "in_stock" ? 'disabled' : ''}>
+                                    <i class="fas fa-tools me-1"></i>
+                                    <span>Instalación</span>
+                                </button>
+                                ` : ''}
+
+                                <button class="btn ${availability === "in_stock" ? 'btn-success' : 'btn-outline-secondary'} btn-sm d-inline-flex align-items-center" 
+                                        onclick="${availability === "in_stock" ? `askAboutProduct(${product.id})` : ''}"
+                                        ${availability !== "in_stock" ? 'disabled' : ''}>
+                                    <i class="fab fa-whatsapp me-1"></i>
+                                    <span>${availability === "coming_soon" ? 'Notificarme' : availability === "in_stock" ? 'Solicitar' : 'Consultar'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+        }
+
+
+        // Open image modal
+        function openImageModal(productId, imageIndex) {
+            // Pause all carousels when modal opens
+            carouselInstances.forEach(carousel => carousel.pause());
+
+            currentProduct = products.find(p => p.id === productId);
+            currentImageIndex = imageIndex;
+            updateModal();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('imageModal')) ||
+                new bootstrap.Modal(document.getElementById('imageModal'));
+            modal.show();
+        }
+
+        // Update modal content
+        function updateModal() {
+            if (!currentProduct) return;
+
+            const images = currentProduct.images;
+            document.getElementById('modalImage').src = images[currentImageIndex];
+            document.getElementById('imageCounter').textContent = `${currentImageIndex + 1}/${images.length}`;
+
+            // Update thumbnails
+            const thumbsContainer = document.getElementById('thumbnailsContainer');
+            thumbsContainer.innerHTML = '';
+
+            images.forEach((img, idx) => {
+                const thumb = document.createElement('img');
+                thumb.src = img;
+                thumb.className = `thumbnail ${idx === currentImageIndex ? 'active' : ''}`;
+                thumb.onclick = () => {
+                    currentImageIndex = idx;
+                    updateModal();
+                };
+                thumbsContainer.appendChild(thumb);
+            });
+        }
+
+        // Navigate between images
+        function navigateImage(direction) {
+            if (!currentProduct) return;
+
+            const images = currentProduct.images;
+            currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+            updateModal();
+        }
+
+        function askAboutProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const whatsappNumber = "904417957";
+            const productImage = product.images[0];
+            const productUrl = `https://car-reycer.web.app/products?id=${productId}`;
+
+            const message = `¡Hola! Estoy interesado en el producto:\n\n` +
+                `*${product.title}*\n` +
+                `Marca: ${product.brand}\n` +
+                `Precio: S/. ${product.currentPrice.toFixed(2)}\n` +
+                `Ver producto: ${productUrl}\n\n` +
+                `Me gustaría saber:\n` +
+                `- Métodos de pago\n` +
+                `- Disponibilidad actual`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Función para abrir el modal de video
+        function openVideoModal(videoUrl, productTitle) {
+            const videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
+            const videoFrame = document.getElementById('videoFrame');
+            const videoModalTitle = document.getElementById('videoModalTitle');
+
+            // Configurar el iframe con la URL del video
+            videoFrame.src = videoUrl;
+            //videoModalTitle.textContent = `Video: ${productTitle}`;
+
+            // Mostrar el modal
+            videoModal.show();
+
+            // Limpiar el iframe al cerrar el modal
+            document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+                videoFrame.src = '';
+            });
+        }
+    </script>
+</body>
+
+</html>
